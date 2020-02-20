@@ -1,0 +1,550 @@
+{
+    "jstor2-a": {
+      "settings": {
+          "analysis": {
+            "analyzer": {
+              "evolutionAnalyzer": {
+                "tokenizer": "standard",
+                "filter": [
+                  "standard",
+                  "lowercase",
+                  "custom_stop",
+                  "custom_shingle"
+                ]
+              }
+            },
+            "filter": {
+              "custom_stop": {
+                  "type": "stop",
+                  "stopwords": "_english_"
+              },
+              "custom_shingle": {
+                  "type": "shingle",
+                  "min_shingle_size": "2",
+                  "max_shingle_size": "3"
+              }
+            }
+          }
+        },
+        "mappings": {
+            "article": {
+                "properties": {
+                    "body": {
+                        "fields": {
+                            "keyword": {
+                                "ignore_above": 256,
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "text",
+                        "analyzer":"evolutionAnalyzer",
+                        "search_analyzer":"evolutionAnalyzer"
+                    },
+                    "article": {
+                        "properties": {
+                            "article-meta": {
+                                "properties": {
+                                    "volume": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    },
+                                    "issue": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    },
+                                    "author-notes": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    },
+                                    "abstract": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text",
+                                        "search_analyzer":"evolutionAnalyzer",
+                                        "analyzer":"evolutionAnalyzer"
+                                    },
+                                    "year": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    },
+                                    "article-categories": {
+                                        "properties": {
+                                            "subj-group": {
+                                                "properties": {
+                                                    "@subj-group-type": {
+                                                        "fields": {
+                                                            "keyword": {
+                                                                "ignore_above": 256,
+                                                                "type": "keyword"
+                                                            }
+                                                        },
+                                                        "type": "text"
+                                                    },
+                                                    "subject": {
+                                                        "fields": {
+                                                            "keyword": {
+                                                                "ignore_above": 256,
+                                                                "type": "keyword"
+                                                            }
+                                                        },
+                                                        "type": "text"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "issue-id": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    },
+                                    "lpage": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    },
+                                    "title-group": {
+                                        "properties": {
+                                            "subtitle": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text",
+                                                "search_analyzer":"evolutionAnalyzer",
+                                                "analyzer":"evolutionAnalyzer"
+                                            },
+                                            "article-title": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text",
+                                                "search_analyzer":"evolutionAnalyzer",
+                                                "analyzer":"evolutionAnalyzer"
+                                            }
+                                        }
+                                    },
+                                    "kwd-group": {
+                                        "properties": {
+                                            "title": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "kwd": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "label": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            }
+                                        }
+                                    },
+                                    "fpage": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    },
+                                    "self-uri": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    },
+                                    "counts": {
+                                        "properties": {
+                                            "page-count": {
+                                                "type": "long"
+                                            },
+                                            "ref-count": {
+                                                "type": "long"
+                                            }
+                                        }
+                                    },
+                                    "page-range": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    },
+                                    "contrib-group": {
+                                        "properties": {
+                                            "contrib": {
+                                                "properties": {
+                                                    "@contrib-type": {
+                                                        "fields": {
+                                                            "keyword": {
+                                                                "ignore_above": 256,
+                                                                "type": "keyword"
+                                                            }
+                                                        },
+                                                        "type": "text"
+                                                    },
+                                                    "@corresp": {
+                                                        "fields": {
+                                                            "keyword": {
+                                                                "ignore_above": 256,
+                                                                "type": "keyword"
+                                                            }
+                                                        },
+                                                        "type": "text"
+                                                    },
+                                                    "@xlink:href": {
+                                                        "fields": {
+                                                            "keyword": {
+                                                                "ignore_above": 256,
+                                                                "type": "keyword"
+                                                            }
+                                                        },
+                                                        "type": "text"
+                                                    },
+                                                    "collab": {
+                                                        "fields": {
+                                                            "keyword": {
+                                                                "ignore_above": 256,
+                                                                "type": "keyword"
+                                                            }
+                                                        },
+                                                        "type": "text"
+                                                    },
+                                                    "string-name": {
+                                                        "fields": {
+                                                            "keyword": {
+                                                                "ignore_above": 256,
+                                                                "type": "keyword"
+                                                            }
+                                                        },
+                                                        "type": "text"
+                                                    },
+                                                    "@equal-contrib": {
+                                                        "fields": {
+                                                            "keyword": {
+                                                                "ignore_above": 256,
+                                                                "type": "keyword"
+                                                            }
+                                                        },
+                                                        "type": "text"
+                                                    },
+                                                    "aff": {
+                                                        "fields": {
+                                                            "keyword": {
+                                                                "ignore_above": 256,
+                                                                "type": "keyword"
+                                                            }
+                                                        },
+                                                        "type": "text"
+                                                    }
+                                                }
+                                            },
+                                            "bio": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "aff": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "email": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "fn": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            }
+                                        }
+                                    },
+                                    "article-id": {
+                                        "properties": {
+                                            "@pub-id-type": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "#text": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            }
+                                        }
+                                    },
+									"aff": {
+										"fields": {
+											"keyword": {
+												"ignore_above": 256,
+												"type": "keyword"
+											}
+										},
+										"type": "text"
+									}
+                                }
+                            },
+                            "ack": {
+                                "fields": {
+                                    "keyword": {
+                                        "ignore_above": 256,
+                                        "type": "keyword"
+                                    }
+                                },
+                                "type": "text"
+                            },
+                            "notes": {
+                                "fields": {
+                                    "keyword": {
+                                        "ignore_above": 256,
+                                        "type": "keyword"
+                                    }
+                                },
+                                "type": "text"
+                            },
+                            "journal-meta": {
+                                "properties": {
+                                    "publisher": {
+                                        "properties": {
+                                            "publisher-name": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            }
+                                        }
+                                    },
+                                    "journal-id": {
+                                        "properties": {
+                                            "#text": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "@journal-id-type": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            }
+                                        }
+                                    },
+                                    "issn": {
+                                        "properties": {
+                                            "#text": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "@pub-type": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            }
+                                        }
+                                    },
+                                    "journal-title": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    }
+                                }
+                            },
+                            "fn-group": {
+                                "fields": {
+                                    "keyword": {
+                                        "ignore_above": 256,
+                                        "type": "keyword"
+                                    }
+                                },
+                                "type": "text"
+                            },
+                            "ref-list": {
+                                "properties": {
+                                    "ref": {
+                                        "properties": {
+                                            "mixed-citation": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "@id": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            },
+                                            "label": {
+                                                "fields": {
+                                                    "keyword": {
+                                                        "ignore_above": 256,
+                                                        "type": "keyword"
+                                                    }
+                                                },
+                                                "type": "text"
+                                            }
+                                        }
+                                    },
+                                    "title": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    }
+                                }
+                            },
+                            "sec": {
+                                "fields": {
+                                    "keyword": {
+                                        "ignore_above": 256,
+                                        "type": "keyword"
+                                    }
+                                },
+                                "type": "text"
+                            },
+                            "app-group": {
+                                "properties": {
+                                    "app": {
+                                        "fields": {
+                                            "keyword": {
+                                                "ignore_above": 256,
+                                                "type": "keyword"
+                                            }
+                                        },
+                                        "type": "text"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "plain_text": {
+                        "fields": {
+                            "keyword": {
+                                "ignore_above": 256,
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "text"
+                    }
+                }
+            }
+        }
+    }
+}

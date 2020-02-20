@@ -2,24 +2,24 @@
 # coding: utf-8
 
 # ## Requirements
-# 
+#
 # This notebook was written for Python 2.7, and requires the following packages:
 # - `lxml==4.0.0`
 # - `elasticsearch==5.4.0`
 # - `xmltodict==0.11.0h`
 
 # ## Environment
-# 
+#
 # Define environment variables:
 # - `DATASET_DIR`:
 # Path to the dataset directory.
-# 
+#
 # - `ES_INDEX_NAME`:
 # The elasticsearch index where you want the documents to be uploaded.
-# 
+#
 # - `ES_DOCUMENT_TYPE`:
 # The document type you want to use for each uploaded document.
-# 
+#
 # - `ES_HOST`:
 # The connection string for accessing Elasticsearch instance. The format is as follows:
 # ```
@@ -34,7 +34,7 @@
 import sys
 
 if len(sys.argv) < 6:
-    print 'Usage:\n\t JSTOR-Elasticsearch.py <dataset> <index-name> <es-host> <mappings-file> <log-prefix>\n'
+    print('Usage:\n\t JSTOR-Elasticsearch.py <dataset> <index-name> <es-host> <mappings-file> <log-prefix>\n')
     sys.exit(2)
 
 DATASET_DIR      = sys.argv[1]
@@ -59,10 +59,10 @@ if DEBUG:
     ES_CREATE_INDEX = False
 
 # ### Logging
-# 
-# To get realtime logs of processed directories, set ``'dataset'`` logger's level to `logging.INFO` or `logging.DEBUG`.  
-#   
-#   
+#
+# To get realtime logs of processed directories, set ``'dataset'`` logger's level to `logging.INFO` or `logging.DEBUG`.
+#
+#
 # **Note**: `'elasticsearch'` logger generates high amounts of debug log statements.
 
 # In[ ]:
@@ -70,7 +70,7 @@ if DEBUG:
 
 import logging
 import datetime
-logger = logging.getLogger().setLevel(logging.CRITICAL)
+logger = logging.getLogger().setLevel(logging.DEBUG)
 
 logger = logging.getLogger('jstor')
 DEBUG_LOG_FILENAME = '{}_debug.log'.format(LOG_PREFIX)
@@ -87,19 +87,20 @@ logger.addHandler(warning_handler)
 logger.addHandler(debug_handler)
 
 # ## Supporting Implementation
-# 
+#
 # ### UTF8 encoding
-# 
-# *NOTE: This step is not needed for Python 3 and above.*  
-# 
+#
+# *NOTE: This step is not needed for Python 3 and above.*
+#
 # Ensure all strings use `utf-8` encoding by default, else you may run into `ordinal not in range` errors.
 
 # In[ ]:
 
 
-import sys
-reload(sys)
-sys.setdefaultencoding('UTF8')
+# import sys
+# from imp import reload
+# reload(sys)
+# sys.setdefaultencoding('UTF8')
 
 
 # ### Parsers
@@ -137,7 +138,7 @@ class XMLParser(object):
                 contrib_group['contrib'] = [contrib_group['contrib']]
 
             try:
-                if isinstance(contrib_group['aff'], basestring):
+                if isinstance(contrib_group['aff'], str):
                     contrib_group['aff'] = [contrib_group['aff']]
             except KeyError:
                 pass
@@ -148,11 +149,11 @@ class XMLParser(object):
                 except KeyError:
                     pass
                 else:
-                    if isinstance(name, basestring):
+                    if isinstance(name, str):
                         name = [name]
                     contrib_group['contrib'][i]['string-name'] = name
                 try:
-                    if isinstance(contrib['aff'], basestring):
+                    if isinstance(contrib['aff'], str):
                         contrib['aff'] = [contrib['aff']]
                 except KeyError:
                     pass
@@ -203,7 +204,7 @@ class XMLParser(object):
         etree_str = lambda e: etree.tostring(e, encoding='utf-8', method='text').strip()
         isenglish = lambda x: re.match(x, 'eng?', re.I)
         def postprocessor(path, key, value):
-            xpath = '/'.join((path[i][0] for i in xrange(1, len(path))))
+            xpath = '/'.join((path[i][0] for i in range(1, len(path))))
 
             if key == '@xml:lang' and not isenglish(value):
                 raise LanguageError(value)
@@ -263,7 +264,7 @@ class XMLParser(object):
                 )):
                 return key, int(value['@count'])
 
-            if xpath == 'front/article-meta/self-uri' and not isinstance(value, basestring):
+            if xpath == 'front/article-meta/self-uri' and not isinstance(value, str):
                 return key, value['@xlink:href']
 
             if key == 'address':
@@ -281,7 +282,7 @@ class XMLParser(object):
                 element.set('processed', 'true')
                 if not value:
                     return None
-                return key, value
+                return key, str(value)
             if re.search('|'.join(map(lambda x: '^'+x, path_list)), xpath):
                 return None
 
@@ -340,7 +341,7 @@ class XMLParser(object):
                 element.set('processed', 'true')
                 if not value:
                     return None
-                return key, re.sub('\s+', ' ', value)
+                return key, re.sub('\s+', ' ', str(value))
 
             return key, value
 
@@ -354,11 +355,11 @@ class XMLParser(object):
         if front_back:
             back = front_back[0]
             front.remove(back)
-            article_et.append(back)
+            article_et.append(str(back))
         if front_body:
             body = front_body[0]
             front.remove(body)
-            article_et.append(body)
+            article_et.append(str(body))
 
         if not front_body and not front_back:
             with open(xml_path, 'r') as fh:
@@ -391,9 +392,9 @@ class TXTParser(object):
             page_seq = [(p.attrib['sequence'], p.text) for p in list(txt_root)]
             page_seq.sort(key=lambda x: x[0])
             plain_text_pages = [p for s, p in page_seq]
-            return {'plain_text': plain_text_pages}
+            return {'plain_text': str(plain_text_pages)}
         elif txt_root.tag == 'body':
-            return {'body': ET.tostring(txt_root, encoding='utf-8', method='text')}
+            return {'body': str(ET.tostring(txt_root, encoding='utf-8', method='text'))}
 
 
 # ### Dataset article actions generator
@@ -402,6 +403,7 @@ class TXTParser(object):
 
 
 import os
+import traceback
 
 def generate_actions(dataset_dir, index, document_type):
     abs_dataset_dir = os.path.abspath(os.path.expanduser(dataset_dir))
@@ -432,16 +434,17 @@ def generate_actions(dataset_dir, index, document_type):
 
             try:
                 document['article'] = xmlparser.parse(os.path.join(dpath, xml_path))
-            except LanguageError, e:
+            except LanguageError as e:
                 logger.warning('{}: language \'{}\' not en/eng'.format(xml_path, e))
                 continue
-            except Exception, e:
+            except Exception as e:
                 logger.error('{}: {}'.format(xml_path, e))
+                print(traceback.format_exc())
                 continue
 
             try:
                 document.update(txtparser.parse(txt_path))
-            except ET.ParseError, e:
+            except ET.ParseError as e:
                 logger.error('{}: {}'.format(txt_path, e))
                 continue
 
@@ -456,7 +459,7 @@ def generate_actions(dataset_dir, index, document_type):
 
 
 # ## Upload to ES
-# 
+#
 # #### Imports
 
 # In[ ]:
@@ -471,14 +474,14 @@ import elasticsearch.helpers
 # In[ ]:
 
 if ES_AUTH_USER:
-    print "Using authentication for " + ES_AUTH_USER
+    print("Using authentication for " + ES_AUTH_USER)
     es = elasticsearch.Elasticsearch([ES_HOST], http_auth=ES_AUTH_USER+":"+ES_AUTH_PASSWORD, connection_class=elasticsearch.RequestsHttpConnection) if ES_HOST else elasticsearch.Elasticsearch()
 else:
     es = elasticsearch.Elasticsearch([ES_HOST]) if ES_HOST else elasticsearch.Elasticsearch()
 
 
 # #### Create Index
-# 
+#
 # Create index if necessary.
 
 # In[ ]:
@@ -488,14 +491,13 @@ else:
 import json
 if ES_CREATE_INDEX:
     with open(MAPPINGS_JSON, 'r') as fh:
-        mappings = json.load(fh).values()[0]
+        mappings = list(json.load(fh).values())[0]
     es.indices.create(index=ES_INDEX_NAME, body=mappings)
 
-
 # #### Start Upload
-# 
-# Start (bulk) uploading documents to Elasticsearch. Use `chunk_size` parameter to control how many documents are uploaded in one request. By default, at most `500` documents are uploaded per request.  
-# 
+#
+# Start (bulk) uploading documents to Elasticsearch. Use `chunk_size` parameter to control how many documents are uploaded in one request. By default, at most `500` documents are uploaded per request.
+#
 # Depending on the log level, real-time logs of processed directories may be displayed.
 
 # In[ ]:
@@ -508,10 +510,10 @@ elasticsearch.helpers.bulk(es, action_generator, timeout=ES_TIMEOUT)
 
 
 # #### Test
-# 
+#
 # The following command just gets the count of documents.
 
 # In[ ]:
 
 
-es.count(index=ES_INDEX_NAME, doc_type=ES_DOCUMENT_TYPE)['count']
+print(es.count(index=ES_INDEX_NAME, doc_type=ES_DOCUMENT_TYPE)['count'])
