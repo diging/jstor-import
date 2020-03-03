@@ -3,27 +3,42 @@
       "settings": {
           "analysis": {
             "analyzer": {
-              "evolutionAnalyzer": {
-                "tokenizer": "standard",
+              "shingleAnalyzer": {
+                "tokenizer": "letter",
                 "filter": [
-                  "standard",
                   "lowercase",
                   "custom_stop",
-                  "custom_shingle"
+                  "custom_shingle",
+                  "custom_stemmer",
+                  "length_filter"
                 ]
               }
             },
             "filter": {
+              "custom_stemmer": {
+                  "type": "stemmer",
+                  "name": "english"
+              },
               "custom_stop": {
                   "type": "stop",
                   "stopwords": "_english_"
               },
               "custom_shingle": {
-                  "type": "shingle",
-                  "min_shingle_size": "2",
-                  "max_shingle_size": "3"
+                "type": "shingle",
+                "min_shingle_size": "2",
+                "max_shingle_size": "4",
+                "filler_token":""
+              },
+              "length_filter": {
+                "type": "length",
+                "min": 2
               }
-            }
+            },
+            "tokenizer": {
+              "shingleAnalyzer": {
+                "type": "letter"
+              }
+          }
           }
         },
         "mappings": {
@@ -37,8 +52,8 @@
                             }
                         },
                         "type": "text",
-                        "analyzer":"evolutionAnalyzer",
-                        "search_analyzer":"evolutionAnalyzer"
+                        "analyzer":"shingleAnalyzer",
+                        "search_analyzer":"shingleAnalyzer"
                     },
                     "article": {
                         "properties": {
@@ -79,8 +94,8 @@
                                             }
                                         },
                                         "type": "text",
-                                        "search_analyzer":"evolutionAnalyzer",
-                                        "analyzer":"evolutionAnalyzer"
+                                        "search_analyzer":"shingleAnalyzer",
+                                        "analyzer":"shingleAnalyzer"
                                     },
                                     "year": {
                                         "fields": {
@@ -145,8 +160,8 @@
                                                     }
                                                 },
                                                 "type": "text",
-                                                "search_analyzer":"evolutionAnalyzer",
-                                                "analyzer":"evolutionAnalyzer"
+                                                "search_analyzer":"shingleAnalyzer",
+                                                "analyzer":"shingleAnalyzer"
                                             },
                                             "article-title": {
                                                 "fields": {
@@ -156,8 +171,8 @@
                                                     }
                                                 },
                                                 "type": "text",
-                                                "search_analyzer":"evolutionAnalyzer",
-                                                "analyzer":"evolutionAnalyzer"
+                                                "search_analyzer":"shingleAnalyzer",
+                                                "analyzer":"shingleAnalyzer"
                                             }
                                         }
                                     },
@@ -358,15 +373,15 @@
                                             }
                                         }
                                     },
-									"aff": {
-										"fields": {
-											"keyword": {
-												"ignore_above": 256,
-												"type": "keyword"
-											}
-										},
-										"type": "text"
-									}
+                  									"aff": {
+                  										"fields": {
+                  											"keyword": {
+                  												"ignore_above": 256,
+                  												"type": "keyword"
+                  											}
+                  										},
+                  										"type": "text"
+                  									}
                                 }
                             },
                             "ack": {
@@ -535,13 +550,16 @@
                         }
                     },
                     "plain_text": {
-                        "fields": {
+                      "term_vector": "with_positions_offsets_payloads",
+                      "store": true,
+                      "analyzer": "shingleAnalyzer",
+                      "type": "text",
+                      "fields": {
                             "keyword": {
                                 "ignore_above": 256,
                                 "type": "keyword"
                             }
-                        },
-                        "type": "text"
+                        }
                     }
                 }
             }
