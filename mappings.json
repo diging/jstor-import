@@ -1,6 +1,9 @@
 {
     "jstor2-a": {
       "settings": {
+          "index": {
+            "refresh_interval": "30s"
+          },
           "analysis": {
             "analyzer": {
               "shingleAnalyzer": {

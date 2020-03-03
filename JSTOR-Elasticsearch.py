@@ -2,24 +2,24 @@
 # coding: utf-8
 
 # ## Requirements
-# 
+#
 # This notebook was written for Python 2.7, and requires the following packages:
 # - `lxml==4.0.0`
 # - `elasticsearch==5.4.0`
 # - `xmltodict==0.11.0h`
 
 # ## Environment
-# 
+#
 # Define environment variables:
 # - `DATASET_DIR`:
 # Path to the dataset directory.
-# 
+#
 # - `ES_INDEX_NAME`:
 # The elasticsearch index where you want the documents to be uploaded.
-# 
+#
 # - `ES_DOCUMENT_TYPE`:
 # The document type you want to use for each uploaded document.
-# 
+#
 # - `ES_HOST`:
 # The connection string for accessing Elasticsearch instance. The format is as follows:
 # ```
@@ -51,7 +51,7 @@ if len(sys.argv) > 6:
 
 ES_DOCUMENT_TYPE = 'article'
 ES_CREATE_INDEX  = True
-ES_TIMEOUT = "60s"
+ES_TIMEOUT = 60
 
 DEBUG = ''
 
@@ -59,10 +59,10 @@ if DEBUG:
     ES_CREATE_INDEX = False
 
 # ### Logging
-# 
-# To get realtime logs of processed directories, set ``'dataset'`` logger's level to `logging.INFO` or `logging.DEBUG`.  
-#   
-#   
+#
+# To get realtime logs of processed directories, set ``'dataset'`` logger's level to `logging.INFO` or `logging.DEBUG`.
+#
+#
 # **Note**: `'elasticsearch'` logger generates high amounts of debug log statements.
 
 # In[ ]:
@@ -87,11 +87,11 @@ logger.addHandler(warning_handler)
 logger.addHandler(debug_handler)
 
 # ## Supporting Implementation
-# 
+#
 # ### UTF8 encoding
-# 
-# *NOTE: This step is not needed for Python 3 and above.*  
-# 
+#
+# *NOTE: This step is not needed for Python 3 and above.*
+#
 # Ensure all strings use `utf-8` encoding by default, else you may run into `ordinal not in range` errors.
 
 # In[ ]:
@@ -456,7 +456,7 @@ def generate_actions(dataset_dir, index, document_type):
 
 
 # ## Upload to ES
-# 
+#
 # #### Imports
 
 # In[ ]:
@@ -478,7 +478,7 @@ else:
 
 
 # #### Create Index
-# 
+#
 # Create index if necessary.
 
 # In[ ]:
@@ -493,9 +493,9 @@ if ES_CREATE_INDEX:
 
 
 # #### Start Upload
-# 
-# Start (bulk) uploading documents to Elasticsearch. Use `chunk_size` parameter to control how many documents are uploaded in one request. By default, at most `500` documents are uploaded per request.  
-# 
+#
+# Start (bulk) uploading documents to Elasticsearch. Use `chunk_size` parameter to control how many documents are uploaded in one request. By default, at most `500` documents are uploaded per request.
+#
 # Depending on the log level, real-time logs of processed directories may be displayed.
 
 # In[ ]:
@@ -504,11 +504,12 @@ if ES_CREATE_INDEX:
 action_generator = generate_actions(DATASET_DIR, index=ES_INDEX_NAME, document_type=ES_DOCUMENT_TYPE)
 
 # elasticsearch.helpers.bulk(es, action_generator, chunk_size=100)
-elasticsearch.helpers.bulk(es, action_generator, timeout=ES_TIMEOUT)
+#elasticsearch.helpers.bulk(es, action_generator, timeout=ES_TIMEOUT)
+elasticsearch.helpers.bulk(es, action_generator, chunk_size=100, request_timeout=ES_TIMEOUT)
 
 
 # #### Test
-# 
+#
 # The following command just gets the count of documents.
 
 # In[ ]:

@@ -51,7 +51,7 @@ if len(sys.argv) > 6:
 
 ES_DOCUMENT_TYPE = 'article'
 ES_CREATE_INDEX  = True
-ES_TIMEOUT = "60s"
+ES_TIMEOUT = 60
 
 DEBUG = ''
 
@@ -475,9 +475,9 @@ import elasticsearch.helpers
 
 if ES_AUTH_USER:
     print("Using authentication for " + ES_AUTH_USER)
-    es = elasticsearch.Elasticsearch([ES_HOST], http_auth=ES_AUTH_USER+":"+ES_AUTH_PASSWORD, connection_class=elasticsearch.RequestsHttpConnection) if ES_HOST else elasticsearch.Elasticsearch()
+    es = elasticsearch.Elasticsearch([ES_HOST], timeout=ES_TIMEOUT, retry_on_timeout=True, http_auth=ES_AUTH_USER+":"+ES_AUTH_PASSWORD, connection_class=elasticsearch.RequestsHttpConnection) if ES_HOST else elasticsearch.Elasticsearch()
 else:
-    es = elasticsearch.Elasticsearch([ES_HOST]) if ES_HOST else elasticsearch.Elasticsearch()
+    es = elasticsearch.Elasticsearch([ES_HOST], timeout=ES_TIMEOUT, retry_on_timeout=True) if ES_HOST else elasticsearch.Elasticsearch()
 
 
 # #### Create Index
@@ -506,7 +506,7 @@ if ES_CREATE_INDEX:
 action_generator = generate_actions(DATASET_DIR, index=ES_INDEX_NAME, document_type=ES_DOCUMENT_TYPE)
 
 # elasticsearch.helpers.bulk(es, action_generator, chunk_size=100)
-elasticsearch.helpers.bulk(es, action_generator, timeout=ES_TIMEOUT)
+elasticsearch.helpers.bulk(es, action_generator, chunk_size=100, timeout=ES_TIMEOUT)
 
 
 # #### Test
